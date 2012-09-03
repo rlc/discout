@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Discount App</string>
+    <string name="search_message">Enter a restaurant or card name</string>
+    <string name="button_search">Search</string>    
+</resources>
