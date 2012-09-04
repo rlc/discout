@@ -13,6 +13,7 @@ import org.apache.http.util.ByteArrayBuffer;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -30,13 +31,14 @@ import com.example.service.PromotionHandler;
 
 public class DiscountApp extends ListActivity  {
 	public final static String EXTRA_MESSAGE = "Hellow"; 
+    public static SQLiteDatabase ourDatabase;	
     private final String PATH = "/mnt/sdcard/.data/";  //put the downloaded file here
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
+               
         PromotionHandler dbpromo = new PromotionHandler(this);
         
         DownloadFromUrl("http://www.adaapaya.com/userdata/real/7bbb1b10567cca5d6b130019c94dfc37.jpg", "koiki"); 
@@ -44,10 +46,8 @@ public class DiscountApp extends ListActivity  {
         
         Promotion newPromo	= new Promotion
     	(
-    		2, 2, 1, "Koiki", "Japanese Restaurant",
-    		"50% all food", "2012-08-30",
-   			"2012-12-31", "Plaza Indonesia Ground Floor",
-			"1111000", fileurl
+    		2, 2, 1, "Koiki", "Japanese Restaurant", "50% all food", "2012-08-30", "2012-12-31", 
+    		"Plaza Indonesia Ground Floor", "1111000", fileurl
     	);
         
         dbpromo.addPromotion(newPromo);        
@@ -66,25 +66,18 @@ public class DiscountApp extends ListActivity  {
             Log.d("ImageManager", "download begining");
             Log.d("ImageManager", "download url:" + url);
             Log.d("ImageManager", "downloaded file name:" + fileName);
-            /* Open a connection to that URL. */
+
             URLConnection ucon = url.openConnection();
 
-            /*
-             * Define InputStreams to read from the URLConnection.
-             */
             InputStream is = ucon.getInputStream();
             BufferedInputStream bis = new BufferedInputStream(is);
 
-            /*
-             * Read bytes to the Buffer until there is nothing more to read(-1).
-             */
             ByteArrayBuffer baf = new ByteArrayBuffer(50);
             int current = 0;
             while ((current = bis.read()) != -1) {
                     baf.append((byte) current);
             }
 
-            /* Convert the Bytes read to a String. */
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(baf.toByteArray());
             fos.close();
@@ -137,6 +130,7 @@ public class DiscountApp extends ListActivity  {
     	ListAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, promoList);
     	return adapter;    
     }    
+
     
     public void searchPromotion (View view) {
     	Intent intent 		= new Intent(this, DisplayMessageActivity.class);    	

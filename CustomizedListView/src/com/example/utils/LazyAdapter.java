@@ -46,19 +46,19 @@ public class LazyAdapter extends BaseAdapter {
         if(convertView==null)
             vi = inflater.inflate(R.layout.list_row, null);
 
-        TextView title = (TextView)vi.findViewById(R.id.title); // title
-        TextView artist = (TextView)vi.findViewById(R.id.artist); // artist name
-        TextView duration = (TextView)vi.findViewById(R.id.duration); // duration
+        TextView name = (TextView)vi.findViewById(R.id.name); // name
+        TextView namedesc = (TextView)vi.findViewById(R.id.namedesc); // namedesc name
+        TextView promodesc = (TextView)vi.findViewById(R.id.promodesc); // promodesc
         ImageView thumb_image=(ImageView)vi.findViewById(R.id.list_image); // thumb image
         
-        HashMap<String, String> song = new HashMap<String, String>();
-        song = data.get(position);
+        HashMap<String, String> promotion = new HashMap<String, String>();
+        promotion = data.get(position);
         
         // Setting all values in listview
-        title.setText(song.get(DiscountApp.KEY_TITLE));
-        artist.setText(song.get(DiscountApp.KEY_ARTIST));
-        duration.setText(song.get(DiscountApp.KEY_DURATION));
-        imageLoader.DisplayImage(song.get(DiscountApp.KEY_THUMB_URL), thumb_image);
+        name.setText(promotion.get(DiscountApp.KEY_NAME));
+        namedesc.setText(promotion.get(DiscountApp.KEY_NAME_DESC));
+        promodesc.setText(promotion.get(DiscountApp.KEY_PROMO_DESC));
+        imageLoader.DisplayImage(promotion.get(DiscountApp.KEY_IMAGE_URL), thumb_image);
         return vi;
     }
 }

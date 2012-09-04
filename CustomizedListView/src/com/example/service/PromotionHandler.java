@@ -120,32 +120,73 @@ public class PromotionHandler extends SQLiteOpenHelper {
     }
      
     // Getting All Contacts
-    public List<Promotion> getAllPromotions() {
+    public List<Promotion> getAllPromotions(String query) {
+    	
+   		String[] keywords = query.split(" ");
+    	
         List<Promotion> contactList = new ArrayList<Promotion>();
+
         // Select All Query
-        String selectQuery = "SELECT  * FROM " + TABLE_NAME;
-     
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-     
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
-                Promotion contact = new Promotion();
-                contact.setIdPromo(Integer.parseInt(cursor.getString(0)));
-                contact.setIdMerchant(Integer.parseInt(cursor.getString(1)));
-                contact.setIdCard(Integer.parseInt(cursor.getString(2)));
-                contact.setName(cursor.getString(3));
-                contact.setNameDesc(cursor.getString(4));
-                contact.setPromoDesc(cursor.getString(5));
-                contact.setStartDate(cursor.getString(6));
-                contact.setEndDate(cursor.getString(7));
-                contact.setLocation(cursor.getString(8));
-                contact.setWeekdays(cursor.getString(9));
-                contact.setImage(cursor.getString(10));
-                // Adding contact to list
-                contactList.add(contact);
-            } while (cursor.moveToNext());
+        int size = keywords.length;
+        
+        String selectQuery = "";
+        if(size == 1 && keywords[0].contentEquals("all")) {
+	        selectQuery = "	SELECT  * FROM " + TABLE_NAME;   
+	        SQLiteDatabase db = this.getWritableDatabase();
+	        Cursor cursor = db.rawQuery(selectQuery, null);
+	     
+	        // looping through all rows and adding to list
+	        if (cursor.moveToFirst()) {
+	            do {
+	                Promotion contact = new Promotion();
+	                contact.setIdPromo(Integer.parseInt(cursor.getString(0)));
+	                contact.setIdMerchant(Integer.parseInt(cursor.getString(1)));
+	                contact.setIdCard(Integer.parseInt(cursor.getString(2)));
+	                contact.setName(cursor.getString(3));
+	                contact.setNameDesc(cursor.getString(4));
+	                contact.setPromoDesc(cursor.getString(5));
+	                contact.setStartDate(cursor.getString(6));
+	                contact.setEndDate(cursor.getString(7));
+	                contact.setLocation(cursor.getString(8));
+	                contact.setWeekdays(cursor.getString(9));
+	                contact.setImage(cursor.getString(10));
+	                // Adding contact to list
+	                contactList.add(contact);
+	            } while (cursor.moveToNext());
+	        }	        
+        }
+        else {        
+	        for(int i=0; i<size; i++) {
+		        selectQuery = 
+		        	"	SELECT  * FROM " + TABLE_NAME + " WHERE " +
+			        	KEY_NAME + " LIKE '%" + keywords[i] + "%' OR " +
+			        	KEY_NAME_DESC + " LIKE '%" + keywords[i] + "%' OR " +
+			        	KEY_PROMO_DESC + " LIKE '%" + keywords[i] + "%' OR " +
+			        	KEY_LOCATION + " LIKE '%" + keywords[i] + "%'";
+		     
+		        SQLiteDatabase db = this.getWritableDatabase();
+		        Cursor cursor = db.rawQuery(selectQuery, null);
+		     
+		        // looping through all rows and adding to list
+		        if (cursor.moveToFirst()) {
+		            do {
+		                Promotion contact = new Promotion();
+		                contact.setIdPromo(Integer.parseInt(cursor.getString(0)));
+		                contact.setIdMerchant(Integer.parseInt(cursor.getString(1)));
+		                contact.setIdCard(Integer.parseInt(cursor.getString(2)));
+		                contact.setName(cursor.getString(3));
+		                contact.setNameDesc(cursor.getString(4));
+		                contact.setPromoDesc(cursor.getString(5));
+		                contact.setStartDate(cursor.getString(6));
+		                contact.setEndDate(cursor.getString(7));
+		                contact.setLocation(cursor.getString(8));
+		                contact.setWeekdays(cursor.getString(9));
+		                contact.setImage(cursor.getString(10));
+		                // Adding contact to list
+		                contactList.add(contact);
+		            } while (cursor.moveToNext());
+		        }
+	        }
         }
      
         // return contact list

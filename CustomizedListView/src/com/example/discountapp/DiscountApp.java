@@ -19,13 +19,13 @@ import com.example.service.PromotionHandler;
 import com.example.utils.LazyAdapter;
 
 public class DiscountApp extends Activity {
-	public final static String EXTRA_MESSAGE = "Hellow";	
-	static final String KEY_SONG = "song"; // parent node
-	static final String KEY_ID = "id";
-	public static final String KEY_TITLE = "title";
-	public static final String KEY_ARTIST = "artist";
-	public static final String KEY_DURATION = "duration";
-	public static final String KEY_THUMB_URL = "thumb_url";
+	public static final String SEARCH_QUERY = "Hellow";	
+	static final String KEY_PROMOTION = "promotion"; // parent node
+	static final String KEY_ID_PROMO = "id";
+	public static final String KEY_NAME = "name";
+	public static final String KEY_NAME_DESC = "namedesc";
+	public static final String KEY_PROMO_DESC = "promodesc";
+	public static final String KEY_IMAGE_URL = "thumb_url";
 	
 	ListView list;
     LazyAdapter adapter;
@@ -34,24 +34,29 @@ public class DiscountApp extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		Intent intent 	= getIntent();
+		String query	= intent.getStringExtra(DiscountApp.SEARCH_QUERY);
+
+		if (query == null)	query = "all";
+		
 		setContentView(R.layout.main);	// display search textbox and button
-		displayList();					// display list of promotion information
+		displayList(query);				// display list of promotion information
 		
 	}	
 
     public void searchPromotion (View view) {
-    	Intent intent 		= new Intent(this, DisplaySearchResult.class);    	
+    	Intent intent 		= new Intent(this, DiscountApp.class);    	
     	EditText editText	= (EditText) findViewById(R.id.search_message);
     	String message		= editText.getText().toString();
-    	intent.putExtra(EXTRA_MESSAGE, message);    	
+    	intent.putExtra(SEARCH_QUERY, message);    	
     	startActivity(intent);
     }	
 	
-	public void displayList() {
-		ArrayList<HashMap<String, String>> songsList = getList();
+	public void displayList(String query) {
+		final ArrayList<HashMap<String, String>> promolist = getList(query);
 
 		list=(ListView)findViewById(R.id.list);		
-        adapter=new LazyAdapter(this, songsList);        
+        adapter=new LazyAdapter(this, promolist);        
         list.setAdapter(adapter);
         
         // Click event for single list row
@@ -62,16 +67,22 @@ public class DiscountApp extends Activity {
 					int position, long id) {
 				
 				// GO TO DetailResult.java
+				Intent in = new Intent(getApplicationContext(), DisplaySearchResult.class);
+				in.putExtra(KEY_NAME, promolist.get(position).get(KEY_NAME));
+				in.putExtra(KEY_NAME_DESC, promolist.get(position).get(KEY_NAME_DESC));
+//				in.putExtra(KEY_THUMB_URL, Image);
+				in.putExtra(KEY_PROMO_DESC, promolist.get(position).get(KEY_PROMO_DESC));
+				startActivity(in);
 
 			}
 		});				
 	}
 	
-	public ArrayList<HashMap<String, String>> getList() {
-		ArrayList<HashMap<String, String>> songsList = new ArrayList<HashMap<String, String>>();
+	public ArrayList<HashMap<String, String>> getList(String query) {
+		ArrayList<HashMap<String, String>> promotionsList = new ArrayList<HashMap<String, String>>();
 
 		//	ADD INITIAL DATABASE CONTENT
-		 
+		/* 
 			PromotionHandler dbpromo = new PromotionHandler(this);
 	        Promotion newPromo	= new Promotion
 	    	(
@@ -93,30 +104,29 @@ public class DiscountApp extends Activity {
 	    		"Plaza Indonesia 5th Floor", "1111000", "http://www.adaapaya.com/userdata/thumbnail/87c3e794ade8307e7cb608c16f1a2832.jpg"
 	    	);
 	        dbpromo.addPromotion(newPromo);        
-	        
-        
-        
-        List<Promotion> promotions	= getPromoList();    
+	    */    
+                
+        List<Promotion> promotions	= getPromoList(query);    
         
 		// looping through all song nodes <song>
 		for (int i = 0; i < promotions.size(); i++) {
 			HashMap<String, String> map = new HashMap<String, String>();
 									
-			map.put(KEY_ID, "1");
-			map.put(KEY_TITLE, promotions.get(i).getName());
-			map.put(KEY_ARTIST, promotions.get(i).getNameDesc());
-			map.put(KEY_DURATION, promotions.get(i).getPromoDesc());
-			map.put(KEY_THUMB_URL, promotions.get(i).getImage());
+			map.put(KEY_ID_PROMO, "1");
+			map.put(KEY_NAME, promotions.get(i).getName());
+			map.put(KEY_NAME_DESC, promotions.get(i).getNameDesc());
+			map.put(KEY_PROMO_DESC, promotions.get(i).getPromoDesc());
+			map.put(KEY_IMAGE_URL, promotions.get(i).getImage());
 
-			songsList.add(map);
+			promotionsList.add(map);
 		}		
 		
-		return songsList;
+		return promotionsList;
 	}
 
-    public List<Promotion> getPromoList() {
+    public List<Promotion> getPromoList(String query) {
         PromotionHandler db = new PromotionHandler(this);        
-        List<Promotion> contacts = db.getAllPromotions();      
+        List<Promotion> contacts = db.getAllPromotions(query);      
         db.close();        
         return contacts;
     }
